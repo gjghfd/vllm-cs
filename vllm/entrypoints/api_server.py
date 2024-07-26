@@ -27,6 +27,15 @@ TIMEOUT_KEEP_ALIVE = 5  # seconds.
 app = FastAPI()
 engine = None
 
+# get model info from env
+FC_MODEL_CACHE_DIR = os.getenv('MODELSCOPE_CACHE')
+model_id = os.getenv('MODEL_ID', '')
+model_id = model_id.replace('.', '___')
+model_path = FC_MODEL_CACHE_DIR + '/' + model_id
+
+if not os.path.exists(model_path):
+    print(f"model path = {model_path}")
+    raise ValueError('[ERROR] model not found in cache')
 
 @app.get("/health")
 async def health() -> Response:
@@ -107,7 +116,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     engine_args = AsyncEngineArgs.from_cli_args(args)
     engine = AsyncLLMEngine.from_engine_args(
-        engine_args, usage_context=UsageContext.API_SERVER)
+        engine_args, model=model_path, usage_context=UsageContext.API_SERVER)
 
     app.root_path = args.root_path
 

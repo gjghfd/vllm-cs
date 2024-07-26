@@ -69,6 +69,10 @@ COPY requirements-build.txt requirements-build.txt
 RUN --mount=type=cache,target=/root/.cache/pip \
     python3 -m pip install -r requirements-build.txt
 
+# setup download function
+COPY vllm/entrypoints/pre-init/main.cc .
+RUN g++ main.cc -std=c++11 -O2 -o main
+
 # install compiler cache to speed up compilation leveraging local or remote caching
 RUN apt-get update -y && apt-get install -y ccache
 
@@ -222,11 +226,17 @@ RUN mv vllm test_docs/
 # openai api server alternative
 FROM vllm-base AS vllm-openai
 
+# vmtouch
+COPY vllm/pre-init/vmtouch vmtouch
+RUN cd vmtouch && make && make install
+
 # install additional dependencies for openai api server
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install accelerate hf_transfer 'modelscope!=1.15.0'
 
+COPY --from=build /workspace/main .
+
 ENV VLLM_USAGE_SOURCE production-docker-image
 
-ENTRYPOINT ["python3", "-m", "vllm.entrypoints.openai.api_server"]
+ENTRYPOINT ["/vllm-workspace/main"]
 #################### OPENAI API SERVER ####################

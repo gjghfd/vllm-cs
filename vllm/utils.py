@@ -571,6 +571,8 @@ def print_warning_once(msg: str) -> None:
 
 @lru_cache(maxsize=None)
 def is_pin_memory_available() -> bool:
+    print_warning_once("Faster Cold Start: Do not pin cpu memory.")
+    return False
 
     if in_wsl():
         # Pinning memory in WSL is not supported.
