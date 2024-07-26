@@ -1,0 +1,79 @@
+# 规范文档参考:
+# 中文：https://github.com/Serverless-Devs/Serverless-Devs/blob/master/spec/zh/0.0.2/serverless_package_model/package_model.md#应用模型规范
+# English: https://github.com/Serverless-Devs/Serverless-Devs/blob/master/spec/en/0.0.2/serverless_package_model/package_model.md#Application-model-specification
+# --------------
+# Package 开发发布最佳实践:
+#   - [社区讨论 #62](https://github.com/Serverless-Devs/Serverless-Devs/discussions/62);
+#   - [社区讨论 #407](https://github.com/Serverless-Devs/Serverless-Devs/discussions/407);
+#   - [社区讨论 #439](https://github.com/Serverless-Devs/Serverless-Devs/discussions/439);
+
+Edition: 3.0.0
+Type: Project
+Name: modelscope-vllm
+Provider:
+  - 阿里云 
+Version: dev
+Description: ModelScope + vLLM (fc3.0)
+Tags:
+  - AIGC
+  - 大模型
+Category: 人工智能
+Organization: 阿里云函数计算（FC）
+Service:
+  函数计算:
+    Authorities:
+      - AliyunFCFullAccess
+Effective: Public
+Parameters:
+  type: object
+  additionalProperties: false
+  required: # 必填项
+    - region
+    - roleArn
+    - modelId
+    - modelRevision
+    - accessToken
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: cn-shanghai
+      description: 创建应用所在的地区
+      enum:
+        - cn-hangzhou
+        - cn-shanghai
+    name:
+      title: 项目名
+      type: string
+      default: modelscope-${default-suffix}
+      pattern: "^[a-zA-Z_][a-zA-Z0-9-_]{0,127}$"
+      description: 项目名称，只能包含字母、数字、下划线和中划线。不能以数字、中划线开头。长度在 1-128 之间
+    roleArn:
+      title: 服务角色ARN
+      type: string
+      default: "AliyunFCDefaultRole"
+      pattern: "^acs:ram::[0-9]*:role/.*$"
+      description: "函数计算访问其他云服务时使用的服务角色，需要填写具体的角色ARN，格式为acs:ram::$account-id>:role/$role-name。例如：acs:ram::14310000000:role/aliyunfcdefaultrole。
+      \n如果您没有特殊要求，可以使用函数计算提供的默认的服务角色，即AliyunFCDefaultRole。如果您首次使用函数计算，可以访问 https://fcnext.console.aliyun.com 进行授权。
+      \n详细文档参考 https://help.aliyun.com/document_detail/181589.html?spm=5176.fcnext.help.dexternal.7bea78c8sVHoRf#section-o93-dbr-z6o"
+      x-role:
+        name: fcmodelscoperole
+        service: fc
+        authorities:
+          - AliyunNASFullAccess
+          - AliyunFCDefaultRolePolicy
+    modelId:
+      title: 模型ID
+      type: string
+      default: 'qwen/Qwen1.5-4B-Chat'
+      description: ModelScope的大模型ID, 可以从 https://modelscope.cn/topic/dfefe5be778b49fba8c44646023b57ba/pub/summary 模型页获取
+    modelRevision:
+      title: 模型版本
+      type: string
+      default: 'latest'
+      description: ModelScope的模型版本，可以从模型页获取，或选择 Latest
+    accessToken:
+      title: Access Token
+      type: secret
+      default: ''
+      description: ModelScope的访问令牌（SDK令牌），从https://modelscope.cn/my/myaccesstoken获取

@@ -3,20 +3,20 @@ name: modelscope-app
 # access是当前应用所需要的密钥信息配置：
 # 密钥配置请参见：https://www.serverless-devs.com/serverless-devs/command/config
 # 密钥使用请参见：https://www.serverless-devs.com/serverless-devs/tool
-access: default
+access: {{ access }}
 
 vars: # 全局变量
-  region: cn-shanghai
+  region: {{ region }}
   version: fc-deploy-common-v17.3.4
-  name: modelscope-jylp
-  role: acs:ram::1142606162421667:role/aliyunfcdefaultrole
+  name: {{ name }}
+  role: {{ roleArn }}
   gpuInstanceType: fc.gpu.tesla.1
   gpuMemorySize: 16384
   memorySize: 32768
-  modelID: qwen/Qwen1.5-4B-Chat
-  modelRevision: latest
+  modelID: {{ modelId }}
+  modelRevision: {{ modelRevision }}
   modelTask: chat
-  modelAccessToken: xxx
+  modelAccessToken: {{ accessToken }}
   modelCache: modelsce-mirror-modelsce-mirror-txpzbgwcck.${vars.region}-vpc.fcapp.run
 
 resources:
