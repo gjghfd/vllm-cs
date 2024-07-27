@@ -12,8 +12,8 @@ docker login --username=gjghfd_lch@test.aliyunid.com registry.cn-shanghai.aliyun
 
 ```
 cd vllm-cs
-docker build . --target vllm-openai --tag registry.cn-shanghai.aliyuncs.com/vllm-cs/modelscope-vllm:v1
-[For Mac OS] docker buildx build . --platform=linux/amd64 --target vllm-openai --tag registry.cn-shanghai.aliyuncs.com/vllm-cs/modelscope-vllm:v1
+DOCKER_BUILDKIT=1 docker build . --target vllm-openai --tag registry.cn-shanghai.aliyuncs.com/vllm-cs/modelscope-vllm:v1
+[For Mac OS] DOCKER_BUILDKIT=1 docker buildx build . --platform=linux/amd64 --target vllm-openai --tag registry.cn-shanghai.aliyuncs.com/vllm-cs/modelscope-vllm:v1
 docker push registry.cn-shanghai.aliyuncs.com/vllm-cs/modelscope-vllm:v1
 ```
 

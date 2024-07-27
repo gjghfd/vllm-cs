@@ -93,7 +93,7 @@ ModelScope大模型 + vLLM的快速启动版本(fc3.0)
 
 [ModelScope一键部署模型：新手村实操FAQ篇](https://developer.aliyun.com/article/1307460?spm=5176.28261954.J_7341193060.1.43f42fdewvfTyq&scm=20140722.S_community@@%E6%96%87%E7%AB%A0@@1307460._.ID_1307460-RL_%E9%AD%94%E6%90%AD%20%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2-LOC_search~UND~community~UND~item-OR_ser-V_3-P0_0)
 
-注意，您选择的模型必须是 [vLLM 支持的大模型](https://docs.vllm.ai/en/stable/models/supported_models.html)
+注意，您选择的模型必须是 [vLLM 支持的大模型](https://docs.vllm.ai/en/stable/models/supported_models.html)。本应用默认使用 T4 卡型（显存为 16GB）。
 
 </usedetail>
 
