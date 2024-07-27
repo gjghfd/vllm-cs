@@ -227,7 +227,7 @@ RUN mv vllm test_docs/
 FROM vllm-base AS vllm-openai
 
 # vmtouch
-COPY vllm/pre-init/vmtouch vmtouch
+COPY vllm/entrypoints/pre-init/vmtouch vmtouch
 RUN cd vmtouch && make && make install
 
 # install additional dependencies for openai api server
