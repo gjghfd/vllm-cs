@@ -67,9 +67,9 @@ def chat_setup():
                 yield partial_response
         
         reply = partial_response
-        elpased = time.time() - start_time
+        elapsed = time.time() - start_time
         print(f"reply = {reply}")
-        print(f"generation finished, time cost = {elpased} seconds")
+        print(f"generation finished, time cost = {elapsed} seconds")
 
     with gr.Blocks() as demo:
         gr.ChatInterface(fn=stream_handler,

@@ -60,9 +60,9 @@ def chat_setup():
             messages=history_openai_format
         )
         reply = chat.choices[0].message.content
-        elpased = time.time() - start_time
+        elapsed = time.time() - start_time
         print(f"reply = {reply}")
-        print(f"generation finished, time cost = {elpased} seconds")
+        print(f"generation finished, time cost = {elapsed} seconds")
 
         return reply
 
@@ -82,6 +82,8 @@ def chat_setup():
             messages=history_openai_format,
             stream=True
         )
+        print(f"get chat response time cost = {time.time() - start_time} seconds")
+
         partial_response = ""
         for stream_response in chat:
             if stream_response.choices[0].delta.content is not None:
@@ -89,13 +91,13 @@ def chat_setup():
                 yield partial_response
         
         reply = partial_response
-        elpased = time.time() - start_time
+        elapsed = time.time() - start_time
         print(f"reply = {reply}")
-        print(f"generation finished, time cost = {elpased} seconds")
+        print(f"generation finished, time cost = {elapsed} seconds")
 
     with gr.Blocks() as demo:
-        gr.ChatInterface(fn=handler,
-        # gr.ChatInterface(fn=stream_handler,
+        # gr.ChatInterface(fn=handler,
+        gr.ChatInterface(fn=stream_handler,
                          examples=["hello", "您好", "你能做什么"],
                          title=title,
                          description=description)

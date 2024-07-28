@@ -37,6 +37,8 @@ resources:
   model_download_func:
     component: 'fc3'
     actions:
+      pre-deploy:
+        - component: fc3 build
       complete-deploy:
         - run: sleep 30    # wait nas ready
         - component: fc3@0.0.23 invoke

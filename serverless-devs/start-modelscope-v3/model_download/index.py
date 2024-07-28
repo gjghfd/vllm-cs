@@ -1,4 +1,7 @@
-import os 
+import os
+import sys
+sys.path.append('/code/python')
+
 from modelscope.hub.api import HubApi
 from modelscope.hub.snapshot_download import snapshot_download
 

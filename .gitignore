@@ -193,3 +193,4 @@ hip_compat.h
 
 # serverless-devs files
 serverless-devs/start-modelscope-v3/model_ui/python
+serverless-devs/start-modelscope-v3/model_download/python

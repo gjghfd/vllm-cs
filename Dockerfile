@@ -71,7 +71,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 # setup download function
 COPY vllm/entrypoints/pre-init/main.cc .
-RUN g++ main.cc -std=c++11 -O2 -o main
+RUN g++ main.cc -std=c++11 -lpthread -O2 -o main
 
 # install compiler cache to speed up compilation leveraging local or remote caching
 RUN apt-get update -y && apt-get install -y ccache
