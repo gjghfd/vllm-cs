@@ -2,9 +2,13 @@ import asyncio
 import importlib
 import inspect
 import re
+import os
+import time
 from contextlib import asynccontextmanager
 from http import HTTPStatus
 from typing import Optional, Set
+
+runtime_start_time = time.time()
 
 import fastapi
 import uvicorn
@@ -54,6 +58,14 @@ logger = init_logger('vllm.entrypoints.openai.api_server')
 
 _running_tasks: Set[asyncio.Task] = set()
 
+# get model info from env
+FC_MODEL_CACHE_DIR = os.getenv('MODELSCOPE_CACHE')
+model_id = os.getenv('MODEL_ID', '')
+model_path = FC_MODEL_CACHE_DIR + '/' + model_id
+
+if not os.path.exists(model_path):
+    print(f"model path = {model_path}")
+    raise ValueError('[ERROR] model not found in cache')
 
 @asynccontextmanager
 async def lifespan(app: fastapi.FastAPI):
@@ -126,8 +138,11 @@ async def show_version():
 @router.post("/v1/chat/completions")
 async def create_chat_completion(request: ChatCompletionRequest,
                                  raw_request: Request):
+    start_time = time.time()
     generator = await openai_serving_chat.create_chat_completion(
         request, raw_request)
+    print(f"TEST: Get generator time cost = {time.time() - start_time} seconds")
+    print(f"TEST: Get generator from runtime_start time cost = {time.time() - runtime_start_time} seconds")
     if isinstance(generator, ErrorResponse):
         return JSONResponse(content=generator.model_dump(),
                             status_code=generator.code)
@@ -219,17 +234,29 @@ def run_server(args, llm_engine=None):
     logger.info("vLLM API server version %s", VLLM_VERSION)
     logger.info("args: %s", args)
 
+    args.model = model_path
+    args.enforce_eager = True
+    args.trust_remote_code = True
+    args.dtype = 'half'
+    if "qwen" in args.model:
+        # Limit qwen model's max_model_len to 10240 to avoid error
+        args.max_model_len = 10240
+
     if args.served_model_name is not None:
         served_model_names = args.served_model_name
     else:
-        served_model_names = [args.model]
+        served_model_names = [model_id]
 
     global engine, engine_args
+
+    stime = time.time()
 
     engine_args = AsyncEngineArgs.from_cli_args(args)
     engine = (llm_engine
               if llm_engine is not None else AsyncLLMEngine.from_engine_args(
                   engine_args, usage_context=UsageContext.OPENAI_API_SERVER))
+    
+    print(f"TEST: init engine time cost = {time.time() - stime} seconds")
 
     event_loop: Optional[asyncio.AbstractEventLoop]
     try:
@@ -295,6 +322,8 @@ def run_server(args, llm_engine=None):
             continue
         methods = ', '.join(route.methods)
         logger.info("Route: %s, Methods: %s", route.path, methods)
+    
+    print(f"TEST: uvicorn start at {time.time() - runtime_start_time} seconds")
 
     uvicorn.run(app,
                 host=args.host,

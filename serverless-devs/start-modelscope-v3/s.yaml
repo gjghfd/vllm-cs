@@ -13,7 +13,7 @@ vars: # 全局变量
   gpuInstanceType: fc.gpu.tesla.1
   gpuMemorySize: 16384
   memorySize: 32768
-  modelID: qwen/Qwen1.5-4B-Chat
+  modelID: ZhipuAI/chatglm3-6b
   modelRevision: latest
   modelTask: chat
   modelAccessToken: xxx
@@ -55,6 +55,7 @@ resources:
       runtime: python3.9
       code: ./model_download
       internetAccess: true
+      logConfig: auto
       vpcConfig: ${resources.model_cache.output.vpcConfig}
       nasConfig: ${resources.model_cache.output.nasConfig}
       environmentVariables:
@@ -82,6 +83,7 @@ resources:
       instanceConcurrency: 1
       runtime: custom-container
       internetAccess: true
+      logConfig: auto
       customContainerConfig:
         image: registry.cn-shanghai.aliyuncs.com/vllm-cs/modelscope-vllm:v1
         port: 8000
@@ -118,6 +120,7 @@ resources:
       initializer: 'true'
       initializationTimeout: 300
       internetAccess: true
+      logConfig: auto
       vpcConfig: ${resources.model_cache.output.vpcConfig}
       nasConfig: ${resources.model_cache.output.nasConfig}
       customContainerConfig:
@@ -126,7 +129,7 @@ resources:
       environmentVariables:
         MODEL_ID: ${vars.modelID}
         MODEL_VERSION: ${vars.modelRevision}
-        MODELSCOPE_CACHE: ${resources.model_cache.output.nasConfig.mountPoints.0.mountDir}/
+        MODELSCOPE_CACHE: ${resources.model_cache.output.nasConfig.mountPoints.0.mountDir}
         MODELSCOPE_TOKEN: ${vars.modelAccessToken}
         TASK: ${vars.modelTask}
       triggers:
@@ -144,6 +147,9 @@ resources:
 
   model_ui_func:
     component: 'fc3'
+    actions:
+      pre-deploy:
+        - component: fc3 build
     props:
       region: ${vars.region}
       role: ${vars.role}
@@ -157,6 +163,7 @@ resources:
       code: ./model_ui
       instanceConcurrency: 100
       internetAccess: true
+      logConfig: auto
       environmentVariables:
         MODEL_ID: ${vars.modelID}
         MODEL_VERSION: ${vars.modelRevision}

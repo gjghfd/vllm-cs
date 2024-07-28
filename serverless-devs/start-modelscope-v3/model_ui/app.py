@@ -8,6 +8,8 @@ import random
 import time
 import threading
 
+import sys
+sys.path.append('/code/python')
 from openai import OpenAI
 
 ## global variables inherited from env
@@ -29,8 +31,6 @@ print("[debug] model_revision=", model_revision)
 print("[debug] model_task=", model_task)
 print("[debug] api_url=", api_url)
 
-model_id = model_id.replace('.', '___')
-
 if model_task == None or len(model_task) == 0:
     gr.Warning("Missing necessary model task")
 if api_url == None or len(api_url) == 0:
@@ -43,7 +43,29 @@ client = OpenAI(
     api_key="token"
 )
 
-def chat_setup():    
+def chat_setup():
+    def handler(message, history):
+        if message == None or len(message) == 0:
+            raise gr.Error("Missing necessary input message, please retry.")
+
+        history_openai_format = []
+        for human, assistant in history:
+            history_openai_format.append({"role": "user", "content": human })
+            history_openai_format.append({"role": "assistant", "content":assistant})
+        history_openai_format.append({"role": "user", "content": message})
+
+        start_time = time.time()
+        chat = client.chat.completions.create(
+            model=model_id,
+            messages=history_openai_format
+        )
+        reply = chat.choices[0].message.content
+        elpased = time.time() - start_time
+        print(f"reply = {reply}")
+        print(f"generation finished, time cost = {elpased} seconds")
+
+        return reply
+
     def stream_handler(message, history):
         if message == None or len(message) == 0:
             raise gr.Error("Missing necessary input message, please retry.")
@@ -66,14 +88,14 @@ def chat_setup():
                 partial_response = partial_response + stream_response.choices[0].delta.content
                 yield partial_response
         
-        num_inflight_requests -= 1
         reply = partial_response
         elpased = time.time() - start_time
         print(f"reply = {reply}")
         print(f"generation finished, time cost = {elpased} seconds")
 
     with gr.Blocks() as demo:
-        gr.ChatInterface(fn=stream_handler,
+        gr.ChatInterface(fn=handler,
+        # gr.ChatInterface(fn=stream_handler,
                          examples=["hello", "您好", "你能做什么"],
                          title=title,
                          description=description)

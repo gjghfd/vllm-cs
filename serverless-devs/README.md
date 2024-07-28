@@ -17,7 +17,16 @@ DOCKER_BUILDKIT=1 docker build . --target vllm-openai --tag registry.cn-shanghai
 docker push registry.cn-shanghai.aliyuncs.com/vllm-cs/modelscope-vllm:v1
 ```
 
-3. Use serverless devs to deploy the application
+Or you can choose to build image incrementally in case that you only updated python codes or main.cc.
+
+```
+cd vllm-cs
+docker build . --tag registry.cn-shanghai.aliyuncs.com/vllm-cs/modelscope-vllm:v1 -f Dockerfile_inc
+[For Mac OS] docker buildx build . --platform=linux/amd64 --tag registry.cn-shanghai.aliyuncs.com/vllm-cs/modelscope-vllm:v1 -f Dockerfile_inc
+docker push registry.cn-shanghai.aliyuncs.com/vllm-cs/modelscope-vllm:v1
+```
+
+1. Use serverless devs to deploy the application
 ```
 cd serverlessdevs/start-modelscope-v3
 s deploy -y

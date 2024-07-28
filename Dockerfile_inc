@@ -1,0 +1,10 @@
+FROM registry.cn-shanghai.aliyuncs.com/vllm-cs/modelscope-vllm:v1
+
+WORKDIR /vllm-workspace
+
+COPY vllm/entrypoints/pre-init/main.cc .
+RUN g++ main.cc -std=c++11 -lpthread -O2 -o main
+
+COPY vllm /usr/local/lib/python3.10/dist-packages/vllm/
+
+ENTRYPOINT ["/vllm-workspace/main"]

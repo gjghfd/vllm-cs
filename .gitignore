@@ -190,3 +190,6 @@ hip_compat.h
 
 # Benchmark dataset
 *.json
+
+# serverless-devs files
+serverless-devs/start-modelscope-v3/model_ui/python
