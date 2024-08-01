@@ -228,6 +228,7 @@ FROM vllm-base AS vllm-openai
 
 # vmtouch
 COPY vllm/entrypoints/pre-init/vmtouch vmtouch
+COPY vllm/entrypoints/openai/api_server.py /vllm-workspace/app.py
 RUN cd vmtouch && make && make install
 
 # install additional dependencies for openai api server

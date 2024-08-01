@@ -17,7 +17,7 @@ vars: # 全局变量
   modelRevision: {{ modelRevision }}
   modelTask: chat
   modelAccessToken: {{ accessToken }}
-  modelCache: modelsce-mirror-modelsce-mirror-txpzbgwcck.${vars.region}-vpc.fcapp.run
+  modelCache: www.modelscope.cn
 
 resources:
   model_cache:
@@ -37,8 +37,6 @@ resources:
   model_download_func:
     component: 'fc3'
     actions:
-      pre-deploy:
-        - component: fc3 build
       complete-deploy:
         - run: sleep 30    # wait nas ready
         - component: fc3@0.0.23 invoke
@@ -85,7 +83,7 @@ resources:
       runtime: custom-container
       internetAccess: true
       customContainerConfig:
-        image: registry.cn-shanghai.aliyuncs.com/vllm-cs/modelscope-vllm:v1
+        image: registry.${vars.region}.aliyuncs.com/aliyun-fc/fc-modelscope-vllm:v1
         port: 8000
       environmentVariables:
         MODELSCOPE_CACHE: ${resources.model_cache.output.nasConfig.mountPoints.0.mountDir}
@@ -123,7 +121,7 @@ resources:
       vpcConfig: ${resources.model_cache.output.vpcConfig}
       nasConfig: ${resources.model_cache.output.nasConfig}
       customContainerConfig:
-        image: registry.cn-shanghai.aliyuncs.com/vllm-cs/modelscope-vllm:v1
+        image: registry.${vars.region}.aliyuncs.com/aliyun-fc/fc-modelscope-vllm:v1
         port: 8000
       environmentVariables:
         MODEL_ID: ${vars.modelID}

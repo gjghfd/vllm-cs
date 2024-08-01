@@ -6,5 +6,7 @@ COPY vllm/entrypoints/pre-init/main.cc .
 RUN g++ main.cc -std=c++11 -lpthread -O2 -o main
 
 COPY vllm /usr/local/lib/python3.10/dist-packages/vllm/
+COPY vllm/entrypoints/openai/api_server.py ./app.py
 
 ENTRYPOINT ["/vllm-workspace/main"]
+# ENTRYPOINT ["python3", "-m", "vllm.entrypoints.openai.api_server"]

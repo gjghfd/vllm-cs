@@ -44,6 +44,28 @@ client = OpenAI(
 )
 
 def chat_setup():
+    def handler(message, history):
+        if message == None or len(message) == 0:
+            raise gr.Error("Missing necessary input message, please retry.")
+
+        history_openai_format = []
+        for human, assistant in history:
+            history_openai_format.append({"role": "user", "content": human })
+            history_openai_format.append({"role": "assistant", "content":assistant})
+        history_openai_format.append({"role": "user", "content": message})
+
+        start_time = time.time()
+        chat = client.chat.completions.create(
+            model=model_id,
+            messages=history_openai_format
+        )
+        reply = chat.choices[0].message.content
+        elapsed = time.time() - start_time
+        print(f"reply = {reply}")
+        print(f"generation finished, time cost = {elapsed} seconds")
+
+        return reply
+
     def stream_handler(message, history):
         if message == None or len(message) == 0:
             raise gr.Error("Missing necessary input message, please retry.")
@@ -60,6 +82,8 @@ def chat_setup():
             messages=history_openai_format,
             stream=True
         )
+        print(f"get chat response time cost = {time.time() - start_time} seconds")
+
         partial_response = ""
         for stream_response in chat:
             if stream_response.choices[0].delta.content is not None:
@@ -72,6 +96,7 @@ def chat_setup():
         print(f"generation finished, time cost = {elapsed} seconds")
 
     with gr.Blocks() as demo:
+        # gr.ChatInterface(fn=handler,
         gr.ChatInterface(fn=stream_handler,
                          examples=["hello", "您好", "你能做什么"],
                          title=title,

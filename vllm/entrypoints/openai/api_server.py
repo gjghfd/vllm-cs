@@ -1,14 +1,15 @@
+print("TEST: runtime started.", flush=True)
+import time
+runtime_start_time = time.time()
+
 import asyncio
 import importlib
 import inspect
 import re
 import os
-import time
 from contextlib import asynccontextmanager
 from http import HTTPStatus
 from typing import Optional, Set
-
-runtime_start_time = time.time()
 
 import fastapi
 import uvicorn

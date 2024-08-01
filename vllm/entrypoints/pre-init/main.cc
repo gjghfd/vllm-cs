@@ -23,11 +23,19 @@ void touch_model_files() {
 }
 
 int main() {
-    thread init_model_thread(touch_model_files);
-    init_model_thread.join();
-    system("python3 -m vllm.entrypoints.openai.api_server");
-    // never return
+    int pid = fork();
+    if (pid > 0) {
+        // parent process
 
-    throw runtime_error("vllm.entrypoints.openai.api_server exited unexpectedly.");
+        system("python3 -u /vllm-workspace/app.py");
+        // never return
+
+        throw runtime_error("python program exited unexpectedly.");
+    } else {
+        // child process
+
+        touch_model_files();
+    }
+
     return 0;
 }

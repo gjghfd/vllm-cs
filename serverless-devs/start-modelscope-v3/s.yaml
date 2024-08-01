@@ -6,18 +6,18 @@ name: modelscope-app
 access: default
 
 vars: # 全局变量
-  region: cn-shanghai
+  region: cn-shenzhen
   version: fc-deploy-common-v17.3.4
   name: modelscope-jylp
   role: acs:ram::1142606162421667:role/aliyunfcdefaultrole
   gpuInstanceType: fc.gpu.tesla.1
   gpuMemorySize: 16384
   memorySize: 32768
-  modelID: ZhipuAI/chatglm3-6b
+  modelID: qwen/Qwen1.5-4B-Chat
   modelRevision: latest
   modelTask: chat
   modelAccessToken: xxx
-  modelCache: modelsce-mirror-modelsce-mirror-txpzbgwcck.${vars.region}-vpc.fcapp.run
+  modelCache: www.modelscope.cn
 
 resources:
   model_cache:
@@ -37,8 +37,6 @@ resources:
   model_download_func:
     component: 'fc3'
     actions:
-      pre-deploy:
-        - component: fc3 build
       complete-deploy:
         - run: sleep 30    # wait nas ready
         - component: fc3@0.0.23 invoke
@@ -87,7 +85,7 @@ resources:
       internetAccess: true
       logConfig: auto
       customContainerConfig:
-        image: registry.cn-shanghai.aliyuncs.com/vllm-cs/modelscope-vllm:v1
+        image: registry.${vars.region}.aliyuncs.com/vllm-cs/modelscope-vllm:v1
         port: 8000
       environmentVariables:
         MODELSCOPE_CACHE: ${resources.model_cache.output.nasConfig.mountPoints.0.mountDir}
@@ -112,7 +110,7 @@ resources:
       handler: not-used
       timeout: 1800
       memorySize: ${vars.memorySize}
-      cpu: 2
+      cpu: 8
       diskSize: 512
       gpuConfig:
         gpuMemorySize: ${vars.gpuMemorySize}
@@ -126,7 +124,7 @@ resources:
       vpcConfig: ${resources.model_cache.output.vpcConfig}
       nasConfig: ${resources.model_cache.output.nasConfig}
       customContainerConfig:
-        image: registry.cn-shanghai.aliyuncs.com/vllm-cs/modelscope-vllm:v1
+        image: registry.${vars.region}.aliyuncs.com/vllm-cs/modelscope-vllm:v1
         port: 8000
       environmentVariables:
         MODEL_ID: ${vars.modelID}
